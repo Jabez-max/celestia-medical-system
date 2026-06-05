@@ -53,7 +53,8 @@ export default async function BookAppointmentPage() {
                 </div>
                 <select name="doctorId" required className="pl-10 w-full rounded-xl border border-slate-300 py-3 text-slate-700 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white">
                   <option value="">-- Choose a Doctor --</option>
-                  {doctors.map((doc) => (
+                  {/* DITO NA-APPLY ANG FIX: (doc: any) */}
+                  {doctors.map((doc: any) => (
                     <option key={doc.id} value={doc.id}>
                       Dr. {doc.user.firstName} {doc.user.lastName} - {doc.department.name}
                     </option>
