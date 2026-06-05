@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  // Siguraduhin na naka-set ang iyong DATABASE_URL sa .env file o prisma.config.ts
+}
+
+enum Status {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  passwordHash     String
+  firstName        String
+  lastName         String
+  role             String    // 'PATIENT', 'DOCTOR', 'MEDTECH', o 'ADMIN'
+  createdAt        DateTime  @default(now())
+  
+  resetToken       String?   @unique
+  resetTokenExpiry DateTime?
+
+  patient          Patient?
+  doctor           Doctor?
+  medTech          MedTech?  
+  admin            Admin?    // DAGDAG ITO PARA SA ADMIN
+}
+
+// BAGONG MODEL PARA SA ADMIN
+model Admin {
+  id            String      @id @default(cuid())
+  userId        String      @unique
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model MedTech {
+  id            String      @id @default(cuid())
+  userId        String      @unique
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  licenseNumber String      
+  
+  labResults    LabResult[] 
+}
+
+model Patient {
+  id            String         @id @default(cuid())
+  userId        String         @unique
+  
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dateOfBirth   DateTime
+  
+  appointments  Appointment[]
+  prescriptions Prescription[]
+  labResults    LabResult[]
+}
+
+model Doctor {
+  id            String         @id @default(cuid())
+  userId        String         @unique
+  
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialty     String
+  licenseNumber String
+  
+  departmentId  String
+  department    Department     @relation(fields: [departmentId], references: [id])
+  
+  appointments  Appointment[]
+  prescriptions Prescription[]
+}
+
+model Department {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  
+  doctors     Doctor[]
+}
+
+model Appointment {
+  id        String   @id @default(cuid())
+  patientId String
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId  String
+  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  date      DateTime
+  status    Status   @default(PENDING)
+  notes     String?
+  createdAt DateTime @default(now())
+}
+
+model Prescription {
+  id           String   @id @default(cuid())
+  doctorId     String
+  doctor       Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patientId    String
+  patient      Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade) 
+  
+  medication   String
+  dosage       String
+  instructions String
+  issuedAt     DateTime @default(now())
+}
+
+model Medication {
+  id                  String   @id @default(cuid())
+  name                String   @unique
+  category            String
+  defaultDosage       String
+  defaultInstructions String
+  createdAt           DateTime @default(now())
+}
+
+model LabResult {
+  id          String   @id @default(cuid())
+  
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  medTechId   String?  
+  medTech     MedTech? @relation(fields: [medTechId], references: [id])
+  
+  testName    String   
+  result      String   
+  date        DateTime @default(now())
+  remarks     String?  
+}
+
+// ==========================================
+// HR TO IT ONBOARDING TICKETS
+// ==========================================
+model OnboardingTicket {
+  id             String   @id @default(cuid())
+  ticketNumber   String   @unique // Halimbawa: TKT-1001
+  
+  roleFor        String   // 'DOCTOR' o 'MEDTECH'
+  
+  // Detalye galing sa HR
+  firstName      String
+  lastName       String
+  email          String
+  departmentName String?
+  specialty      String?
+  licenseNumber  String
+  
+  status         String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt      DateTime @default(now())
+}
