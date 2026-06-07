@@ -1,7 +1,11 @@
-import { Calendar, Clock, User, FileText, Stethoscope, ArrowLeft } from 'lucide-react';
+import { Calendar, User, FileText, Stethoscope, ArrowLeft } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import { bookAppointment } from '@/actions/appointment';
 import Link from 'next/link';
+
+// I-import natin yung bagong button dito
+import SubmitButton from './SubmitButton';
+
 // FORCE PUSH TO VERCEL 123
 export default async function BookAppointmentPage() {
   // Kunin lahat ng Doctor sa database para ilagay sa Dropdown
@@ -53,7 +57,6 @@ export default async function BookAppointmentPage() {
                 </div>
                 <select name="doctorId" required className="pl-10 w-full rounded-xl border border-slate-300 py-3 text-slate-700 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white">
                   <option value="">-- Choose a Doctor --</option>
-                  {/* DITO NA-APPLY ANG FIX: (doc: any) */}
                   {doctors.map((doc: any) => (
                     <option key={doc.id} value={doc.id}>
                       Dr. {doc.user.firstName} {doc.user.lastName} - {doc.department.name}
@@ -99,12 +102,9 @@ export default async function BookAppointmentPage() {
               </div>
             </div>
 
-            {/* Submit Button */}
+            {/* Pinalitan natin yung lumang button ng SubmitButton Component natin */}
             <div className="pt-4 border-t border-slate-100">
-              <button type="submit" className="w-full bg-blue-600 text-white font-bold text-lg py-4 rounded-xl hover:bg-blue-700 transition shadow-md hover:shadow-lg flex items-center justify-center gap-2">
-                <Clock className="h-5 w-5" />
-                Confirm Booking
-              </button>
+              <SubmitButton />
             </div>
 
           </form>
