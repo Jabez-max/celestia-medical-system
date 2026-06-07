@@ -86,17 +86,20 @@ export default async function BookAppointmentPage() {
               </p>
             </div>
 
-            {/* Notes */}
+            {/* Notes / Reason for Visit */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Reason for Visit (Optional)</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Reason for Visit <span className="text-red-500">*</span>
+              </label>
               <div className="relative">
                 <div className="absolute top-3 left-3 pointer-events-none">
                   <FileText className="h-5 w-5 text-slate-400" />
                 </div>
                 <textarea 
                   name="notes" 
+                  required
                   rows={4}
-                  placeholder="E.g., I've been experiencing chest pain..."
+                  placeholder="E.g., I've been experiencing redness and itching in my left eye..."
                   className="pl-10 w-full rounded-xl border border-slate-300 py-3 text-slate-700 focus:ring-blue-500 focus:border-blue-500"
                 ></textarea>
               </div>
